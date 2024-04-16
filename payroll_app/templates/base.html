@@ -1,0 +1,12 @@
+<!-- base.html -->
+
+<!-- Load Bootstrap CSS and JS files -->
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+
+{% include "navbar.html" %}
+<!-- Container for page content -->
+<div class="container">
+  {% block content %}{% endblock %}
+</div>
