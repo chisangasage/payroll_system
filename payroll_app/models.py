@@ -1,9 +1,24 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import UserManager, AbstractUser
 
+class EmailAuthenticator(UserManager):
+    def authenticate(self, request, email=None, password=None, **kwargs):
+        if email is None:
+            email = kwargs.get('email')
+        if email is None or password is None:
+            return None
+        try:
+            user = self.get(email=email)
+        except self.model.DoesNotExist:
+            return None
+        if user.check_password(password) and self.user_can_authenticate(user):
+            return user
+        return None
+    
 class User(AbstractUser):
     email = models.EmailField(unique=True)
-    #USERNAME_FIELD = 'email'
+    objects = EmailAuthenticator()
+
 
 class Employee(models.Model):
     name = models.CharField(max_length=255)
