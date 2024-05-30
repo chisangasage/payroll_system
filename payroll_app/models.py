@@ -1,34 +1,30 @@
 from django.db import models
-from django.contrib.auth.models import UserManager, AbstractUser
 
-class EmailAuthenticator(UserManager):
-    def authenticate(self, request, email=None, password=None, **kwargs):
-        if email is None:
-            email = kwargs.get('email')
-        if email is None or password is None:
-            return None
-        try:
-            user = self.get(email=email)
-        except self.model.DoesNotExist:
-            return None
-        if user.check_password(password) and self.user_can_authenticate(user):
-            return user
-        return None
-    
-class User(AbstractUser):
-    email = models.EmailField(unique=True)
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
-    objects = EmailAuthenticator()
+class Department(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
 
+    def __str__(self):
+        return self.name
 
 class Employee(models.Model):
-    name = models.CharField(max_length=255)
-    employee_id = models.CharField(max_length=10, unique=True)
-    age = models.IntegerField()
-    department = models.CharField(max_length=100)
+    employee_id = models.CharField(max_length=255, primary_key=True)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    phone_number = models.CharField(max_length=12)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    position = models.CharField(max_length=255)
+    salary = models.DecimalField(max_digits=10, decimal_places=2)
+    employment_date = models.DateField()
 
-class Payroll(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    pay_period = models.DateField()
-    gross_pay = models.DecimalField(max_digits=10,decimal_places=2)
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+class Benefit(models.Model):
+    type = models.CharField(max_length=255)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+class Deduction(models.Model):
+    type = models.CharField(max_length=255)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+

@@ -1,13 +1,64 @@
 <!-- base.html -->
 
-<!-- Load Bootstrap CSS and JS files -->
-{% load bootstrap4 %}
-{% bootstrap_css %}
-{% bootstrap_javascript jquery='full' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load django_bootstrap5 %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payroll system</title>
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+</head>
+<body>
+    
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url "payroll_app:dashboard" %}">Payroll</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url "payroll_app:dashboard" %}"> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "payroll_app:employees_list" %}">Employees-list</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Employees manager
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                      <li><a class="dropdown-item" href="{% url "payroll_app:register_employee" %}">Create Employee</a></li>
+                      <li><a class="dropdown-item" href="{% url "payroll_app:employees_list" %}">Edit Employee</a></li>
+                      <li><a class="dropdown-item" href="{% url "payroll_app:create_department" %}">Create Department</a></li>
+                    </ul>
+                  </li>
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "payroll_app:dashboard" %}">Welcome, {{ user.username }}!</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
 
-
-{% include "navbar.html" %}
-<!-- Container for page content -->
-<div class="container">
-  {% block content %}{% endblock %}
-</div>
+    <div class="container">
+        {% block content %}
+        
+        {% endblock %}
+    </div>
+</body>
+</html>

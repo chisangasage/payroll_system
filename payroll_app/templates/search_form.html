@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form action="{% url 'payroll_app:print_payslip' %}" method="GET">
+  <input type="text" name="employee_id" placeholder="Enter employee ID">
+  <button type="submit">Search</button>
+</form>
+{% endblock %}

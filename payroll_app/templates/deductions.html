@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="card mb-3">
+    <div class="card-header">
+      <h5>Deductions List</h5>
+    </div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Add Deduction</button>
+      </form>
+      <ul class="list-group list-group-flush">
+        {% for deduction in deductions %}
+          <li class="list-group-item">
+            {{ deduction.type }} - ${{ deduction.amount }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endblock %}
