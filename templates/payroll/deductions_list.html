@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <div class="col-md-12 text-end">
+    <a class="btn btn-secondary" href="{% url 'benefits_index' %}">Back</a>
+  </div>
+  <h3>Master Deductions</h3>
+  <a href="{% url 'add_deduction_master' %}" class="btn btn-success mb-3">Add New Deduction</a>
+  <table class="table table-bordered">
+    <thead><tr><th>Name</th><th>Amount</th><th>Actions</th></tr></thead>
+    <tbody>
+    {% for d in deductions %}
+      <tr>
+        <td>{{ d.name }}</td>
+        <td>{{ d.amount }}</td>
+        <td>
+          <a class="btn btn-primary btn-sm" href="{% url 'edit_deduction_master' d.id %}">Edit</a>
+          <a class="btn btn-danger btn-sm" href="{% url 'delete_deduction_master' d.id %}">Delete</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="3">No deductions have been created yet.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+  <div class="col-md-12 text-end mb-2">
+    <a class="btn btn-secondary" href="{% url 'deductions_list' %}">Back</a>
+  </div>
+  <h3>Add Master Deduction</h3>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label">Name</label>
+      <input name="name" class="form-control" required>
+    </div>
+
+    <div class="form-check mb-3">
+      <input type="checkbox" class="form-check-input" id="is_percentage" name="is_percentage">
+      <label class="form-check-label" for="is_percentage">This deduction is percentage-based</label>
+    </div>
+
+    <div id="fixed-amount" class="mb-3">
+      <label class="form-label">Fixed Amount</label>
+      <input name="amount" class="form-control" type="number" step="0.01">
+    </div>
+
+    <div id="percentage-amount" class="mb-3" style="display: none;">
+      <label class="form-label">Percentage Value (%)</label>
+      <input name="percentage_value" class="form-control" type="number" step="0.01">
+    </div>
+
+    <button class="btn btn-success">Create</button>
+  </form>
+</div>
+
+<script>
+document.getElementById('is_percentage').addEventListener('change', function() {
+  const isChecked = this.checked;
+  document.getElementById('fixed-amount').style.display = isChecked ? 'none' : 'block';
+  document.getElementById('percentage-amount').style.display = isChecked ? 'block' : 'none';
+});
+</script>
+{% endblock %}

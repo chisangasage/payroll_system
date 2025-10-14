@@ -1,63 +1,43 @@
-Payroll Management System
+# Payroll Management System (Django + MySQL) - Scaffold
 
-A simple Django-based payroll management system for tracking employee information, allowances, deductions, and more.
+This repository contains a scaffold for a payroll management system using Django.
+It includes models for Employee, Department, Allowances, Deductions, PayrollRun and Payslip,
+basic CRUD for employees, a dashboard with Chart.js visualization, and admin registration.
 
-Features
+## Quick start (development)
 
-- Employee management: add, delete, edit employee details
-- Allowance management: add, edit allowances
-- Deduction management: add, edit deductions
-- User authentication: login, logout, superuser creation
+1. Create and activate a virtualenv:
+   ```
+   python -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
 
-Requirements
+2. Configure MySQL:
+   - Create a database (e.g. `payroll_db`) and a user with privileges.
+   - Either set environment variables:
+     ```
+     export MYSQL_DB=payroll_db
+     export MYSQL_USER=root
+     export MYSQL_PASSWORD=yourpassword
+     export MYSQL_HOST=127.0.0.1
+     export MYSQL_PORT=3306
+     ```
+   - Or edit `payroll_project/settings.py` DATABASES section.
 
-- Python 3.8+
-- Django 4.2.16
-- mysqlclient 2.1.1
-- django-bootstrap5 2.4.2
-- XAMPP (Apache, MySQL, PHP)
+3. Run migrations and create superuser:
+   ```
+   python manage.py makemigrations
+   python manage.py migrate
+   python manage.py createsuperuser
+   python manage.py runserver
+   ```
+   
 
-Installation
+4. Open http://127.0.0.1:8000/ for the dashboard and http://127.0.0.1:8000/admin/ for admin.
 
-1. Install XAMPP and start Apache and MySQL services.
-2. Create a database named payroll_db in phpMyAdmin.
-3. Import the data.sql file provided in the repository to populate the database.
-4. Clone the repository: git clone https://github.com/chisangasage/payroll_system
-5. Install dependencies: pip install -r requirements.txt
-6. Configure database settings in payroll_project/settings.py:
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'payroll_db',
-        'USER': 'your_username',
-        'PASSWORD': 'your_password',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
-}
-
-1. Run migrations: python manage.py migrate
-2. Create a superuser: python manage.py createsuperuser
-3. Start the server: python manage.py runserver
-
-Usage
-
-- Access the web application at http://localhost:8000
-- Login with superuser credentials to access admin features
-- Use the navigation menu to explore features
-
-Data Model
-
-The database schema is defined in data.sql. The following tables are used:
-
-- Employees
-- Allowances
-- Deductions
-- Payroll
-
-Troubleshooting
-
-- Ensure XAMPP services are running
-- Verify database connection settings
-- Check for migration errors
+## Files included
+- `payroll/` - Django app
+- `payroll_project/` - Django project settings
+- `templates/` - HTML templates (Bootstrap + Chart.js)
+- `requirements.txt`, `README.md`

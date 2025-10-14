@@ -1,7 +1,4 @@
-Django==4.2.16
-mysqlclient==2.1.1
-django-bootstrap5==2.4.2
-psycopg2==2.9.5  # PostgreSQL support
-Pillow==10.0.0  # Image processing
-django-rest-framework==3.14.0  # RESTful APIs
-gunicorn==20.1.0  # Production WSGI server
+Django>=4.2
+mysqlclient>=2.1
+gunicorn
+reportlab>=4.0

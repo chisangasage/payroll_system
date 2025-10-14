@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card p-3">
+      <h5>Total Employees</h5>
+      <h2>{{ total_employees }}</h2>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3">
+      <h5>Total Departments</h5>
+      <h2>{{ total_departments }}</h2>
+    </div>
+  </div>
+</div>
+
+<div class="card p-3 mb-4" style="height: 450px;">
+  <h5>Payroll Overview (Last 6 months)</h5>
+  <canvas id="payrollChart" height="300"></canvas>
+</div>
+
+<div class="card p-3">
+  <h5>Recent Payslips</h5>
+  <ul class="list-group">
+    {% for p in recent_payslips %}
+      <li class="list-group-item">
+        {{ p.employee }} — {{ p.net_pay }} — {{ p.created_at|date:"Y-m-d" }}
+      </li>
+    {% empty %}
+      <li class="list-group-item">No payslips yet.</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('payrollChart').getContext('2d');
+const chart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: {{ chart_labels|safe }},
+    datasets: [
+      {
+        label: 'Gross Pay',
+        data: {{ gross_values|safe }},
+        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      },
+      {
+        label: 'Total Deductions',
+        data: {{ deduction_values|safe }},
+        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1
+      },
+      {
+        label: 'Net Pay',
+        data: {{ net_values|safe }},
+        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index', intersect: false },
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: 'Amount (ZMW)' }
+      },
+      x: {
+        title: { display: true, text: 'Month' }
+      }
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: 'Payroll Summary (Last 6 Months)'
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return context.dataset.label + ': ZMW ' + context.formattedValue;
+          }
+        }
+      },
+      legend: {
+        position: 'bottom'
+      }
+    }
+  }
+});
+</script>
+{% endblock %}

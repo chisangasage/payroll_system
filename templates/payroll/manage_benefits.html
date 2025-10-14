@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <div class="row mb-3">
+    <div class="col-md-8">
+      <h3>{{ employee.first_name }} {{ employee.last_name }} — {{ employee.position }}</h3>
+      <p class="text-muted">{{ employee.department }} • Basic salary: {{ employee.basic_salary }}</p>
+    </div>
+    <div class="col-md-4 text-end">
+      <a class="btn btn-secondary" href="{% url 'benefits_index' %}">Back</a>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Allowances -->
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <strong>Allowances</strong>
+          <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addAllowanceModal">Add Allowance</button>
+        </div>
+        <div class="card-body">
+          <ul class="list-group">
+            {% for a in allowances %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <strong>{{ a.name }}</strong><br>
+                  <small class="text-muted">Amount: {{ a.amount }}</small>
+                </div>
+                <div>
+                  <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editAllowanceModal{{ a.pk }}">Edit</button>
+                  <form method="post" action="{% url 'delete_allowance' a.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                  </form>
+                </div>
+              </li>
+            {% empty %}
+              <li class="list-group-item text-muted">No allowances</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deductions -->
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <strong>Deductions</strong>
+          <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addDeductionModal">Add Deduction</button>
+        </div>
+        <div class="card-body">
+          <ul class="list-group">
+            {% for d in deductions %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <strong>{{ d.name }}</strong><br>
+                  <small class="text-muted">Amount: {{ d.amount }}</small>
+                </div>
+                <div>
+                  <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editDeductionModal{{ d.pk }}">Edit</button>
+                  <form method="post" action="{% url 'delete_deduction' d.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                  </form>
+                </div>
+              </li>
+
+              <!-- Edit Deduction Modal -->
+              <div class="modal fade" id="editDeductionModal{{ d.pk }}" tabindex="-1">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <form method="post" action="{% url 'edit_deduction' d.pk %}">
+                      {% csrf_token %}
+                      <div class="modal-header"><h5 class="modal-title">Edit Deduction</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                      <div class="modal-body">
+                        <div class="mb-3">
+                          <label class="form-label">Name</label>
+                          <select name="name" class="form-select">
+                            {% for cd in common_deductions %}
+                              <option value="{{ cd.name }}" {% if cd.name == d.name %}selected{% endif %}>{{ cd.name }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label">Amount</label>
+                          <input type="number" step="0.01" name="amount" class="form-control" value="{{ d.amount }}">
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                        <button class="btn btn-primary" type="submit">Save</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {% empty %}
+              <li class="list-group-item text-muted">No deductions</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Deduction Modal -->
+<div class="modal fade" id="addDeductionModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'add_deduction' employee.pk %}">
+        {% csrf_token %}
+        <div class="modal-header"><h5 class="modal-title">Add Deduction</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <select name="selected_deduction" class="form-select" onchange="updateDeductionAmount(this)">
+              <option value="" disabled selected>-- Select --</option>
+              {% for cd in common_deductions %}
+                <option 
+                  value="{{ cd.id }}" 
+                  data-amount="{{ cd.amount }}" 
+                  data-is-percentage="{{ cd.is_percentage|yesno:'true,false' }}" 
+                  data-percentage="{{ cd.percentage_value }}">
+                  {{ cd.name }}
+                  {% if cd.is_percentage %}
+                    ({{ cd.percentage_value }}%)
+                  {% else %}
+                    ({{ cd.amount }})
+                  {% endif %}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          <!-- 🔹 show calculated value -->
+          <div class="mb-3">
+            <label class="form-label">Calculated Amount</label>
+            <input type="text" id="deduction-amount-display" class="form-control" readonly value="0.00">
+            <input type="hidden" name="amount" id="deduction-amount-hidden" value="0.00">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-success" type="submit">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Allowance Modal Unchanged -->
+<div class="modal fade" id="addAllowanceModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'add_allowance' employee.pk %}">
+        {% csrf_token %}
+        <div class="modal-header"><h5 class="modal-title">Add Allowance</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <select name="selected_allowance" class="form-select select-with-amount" onchange="fillAmountFromSelect(this)">
+              <option value="" disabled selected>-- Select --</option>
+              {% for ca in common_allowances %}
+                <option value="{{ ca.id }}" data-amount="{{ ca.amount }}">{{ ca.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Amount</label>
+            <input type="number" step="0.01" name="amount" class="form-control" value="0.00">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-success" type="submit">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function fillAmountFromSelect(selectElem){
+  var amount = selectElem.options[selectElem.selectedIndex].dataset.amount || 0;
+  var modal = selectElem.closest('.modal-body') || document;
+  var amtInput = modal.querySelector('input[name="amount"]');
+  if(amtInput){ amtInput.value = parseFloat(amount).toFixed(2); }
+}
+
+function updateDeductionAmount(selectElem){
+  const selected = selectElem.options[selectElem.selectedIndex];
+  const isPercentage = selected.dataset.isPercentage === 'true';
+  const employeeSalary = parseFloat('{{ employee.basic_salary }}');
+  let calculatedAmount = 0.00;
+
+  if (isPercentage){
+    const percent = parseFloat(selected.dataset.percentage || 0);
+    calculatedAmount = (employeeSalary * (percent / 100)).toFixed(2);
+  } else {
+    calculatedAmount = parseFloat(selected.dataset.amount || 0).toFixed(2);
+  }
+
+  document.getElementById('deduction-amount-display').value = calculatedAmount;
+  document.getElementById('deduction-amount-hidden').value = calculatedAmount;
+}
+</script>
+{% endblock %}

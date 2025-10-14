@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h4>Edit Deduction</h4>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label">Name</label>
+      <input type="text" name="name" class="form-control" value="{{ deduction.name }}" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Amount (fixed)</label>
+      <input type="number" name="amount" step="0.01" class="form-control" value="{{ deduction.amount }}">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Or Percentage (%) of Salary</label>
+      <input type="number" name="percentage" step="0.01" class="form-control" placeholder="e.g. 5 for 5%">
+      <div class="form-text">Leave blank if you are entering a fixed amount.</div>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a href="{% url 'manage_benefits' deduction.employee.pk %}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

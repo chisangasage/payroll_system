@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h3>Add Deduction for {{ employee.first_name }} {{ employee.last_name }}</h3>
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- Deduction selection -->
+    <div class="mb-3">
+      <label for="deduction-select" class="form-label">Select Deduction</label>
+      <select id="deduction-select" name="selected_deduction" class="form-select" onchange="updateDeductionAmount()">
+        <option value="" disabled selected>-- Select Deduction --</option>
+        {% for d in deductions %}
+          <option 
+            value="{{ d.id }}" 
+            data-amount="{{ d.amount }}" 
+            data-is-percentage="{{ d.is_percentage|yesno:'true,false' }}" 
+            data-percentage="{{ d.percentage_value }}">
+            {{ d.name }}
+            {% if d.is_percentage %}
+              ({{ d.percentage_value }}%)
+            {% else %}
+              ({{ d.amount }})
+            {% endif %}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Read-only calculated field -->
+    <div class="mb-3">
+      <label class="form-label">Calculated Deduction Amount</label>
+      <input id="display-amount" class="form-control" type="text" value="0.00" readonly>
+    </div>
+
+    <!-- Hidden field that actually gets submitted -->
+    <input type="hidden" name="amount" id="hidden-amount" value="0.00">
+
+    <button type="submit" class="btn btn-primary">Add Deduction</button>
+    <a href="{% url 'deductions_list' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+
+<script>
+function updateDeductionAmount() {
+  const select = document.getElementById('deduction-select');
+  const selectedOption = select.options[select.selectedIndex];
+  const isPercentage = selectedOption.dataset.isPercentage === 'true';
+  const employeeSalary = parseFloat('{{ employee.basic_salary }}');
+  let calculatedAmount = 0.00;
+
+  if (isPercentage) {
+    const percentage = parseFloat(selectedOption.dataset.percentage);
+    calculatedAmount = (employeeSalary * (percentage / 100)).toFixed(2);
+  } else {
+    calculatedAmount = parseFloat(selectedOption.dataset.amount || 0).toFixed(2);
+  }
+
+  document.getElementById('display-amount').value = calculatedAmount;
+  document.getElementById('hidden-amount').value = calculatedAmount;
+}
+</script>
+{% endblock %}

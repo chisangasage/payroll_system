@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Run Payroll</h3>
+{% if message %}
+  <div class="alert alert-success">{{ message }}</div>
+{% endif %}
+<form method="post" class="mb-3">
+  {% csrf_token %}
+  <div class="row g-2 align-items-center">
+    <div class="col-auto">
+      <input type="month" name="month" class="form-control" required>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-primary">Run Payroll</button>
+    </div>
+  </div>
+</form>
+
+<h5>Recent Payroll Runs</h5>
+<table class="table table-sm">
+  <thead><tr><th>Month</th><th>Created</th><th>Actions</th></tr></thead>
+  <tbody>
+    {% for r in runs %}
+    <tr>
+      <td>{{ r.month|date:"Y-m" }}</td>
+      <td>{{ r.created_at|date:"Y-m-d H:i" }}</td>
+      <td>
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'dashboard' %}">View Dashboard</a>
+        <!-- list payslips -->
+        <a class="btn btn-sm btn-secondary" href="{% url 'employees_list' %}">Employees</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="3">No payroll runs yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

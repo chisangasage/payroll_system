@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <div class="card p-3 shadow-sm mb-3">
+  <div class="d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Employee Benefits Overview</h5>
+    <div>
+      <a href="{% url 'allowances_list' %}" class="btn btn-outline-primary btn-sm me-2">
+        Allowances
+      </a>
+      <a href="{% url 'deductions_list' %}" class="btn btn-outline-danger btn-sm">
+        Deductions
+      </a>
+    </div>
+  </div>
+</div>
+<h3>Manage Benefits - Employees</h3>
+<div class="list-group">
+  {% for e in employees %}
+    <a class="list-group-item list-group-item-action" href="{% url 'manage_benefits' e.pk %}">
+      {{ e.employee_id }} — {{ e.first_name }} {{ e.last_name }} ({{ e.department }})
+    </a>
+  {% empty %}
+    <div class="text-muted">No employees yet.</div>
+  {% endfor %}
+</div>
+</div>
+{% endblock %}

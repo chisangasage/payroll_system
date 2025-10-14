@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h3>Edit Master Allowance</h3>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label>Name</label>
+      <input name="name" class="form-control" value="{{ allowance.name }}" required />
+    </div>
+    <div class="mb-3">
+      <label>Amount</label>
+      <input name="amount" class="form-control" type="number" step="0.01" value="{{ allowance.amount }}" required />
+    </div>
+    <button class="btn btn-primary">Save</button>
+  </form>
+</div>
+{% endblock %}

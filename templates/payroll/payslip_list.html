@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Payslips for {{ payroll.month|date:'F Y' }}</h3>
+<table class="table">
+  <thead><tr><th>Employee</th><th>Gross</th><th>Deductions</th><th>Net</th><th>Actions</th></tr></thead>
+  <tbody>
+  {% for p in payslips %}
+    <tr>
+      <td>{{ p.employee.first_name }} {{ p.employee.last_name }}</td>
+      <td>{{ p.gross_pay }}</td>
+      <td>{{ p.total_deductions }}</td>
+      <td>{{ p.net_pay }}</td>
+      <td>
+        <a href="{% url 'payslip_pdf' p.pk %}" onclick="window.open(this.href); return false;" class="btn btn-sm btn-secondary">Print</a>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p><a href="{% url 'export_payroll_pdf' payroll.pk %}" class="btn btn-success">Export All as PDF</a></p>
+{% endblock %}

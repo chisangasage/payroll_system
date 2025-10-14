@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <div class="col-md-4 text-end">
+      <a class="btn btn-secondary" href="{% url 'employees_list' %}">Back to employees</a>
+  </div>
+  <h3>Add Allowance for {{ employee.first_name }} {{ employee.last_name }}</h3>
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label>Select Allowance</label>
+      <select id="allowance-select" name="selected_allowance" class="form-select" onchange="onSelectChange()">
+        <option value="" disabled selected>-- Select Allowance --</option>
+        {% for a in allowances %}
+          <option value="{{ a.id }}" data-amount="{{ a.amount }}">{{ a.name }} ({{ a.amount }})</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <input type="hidden" name="amount" id="hidden-amount" value="0.00">
+
+    <button class="btn btn-primary">Add Allowance</button>
+  </form>
+</div>
+{% endblock %}
